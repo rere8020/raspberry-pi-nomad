@@ -1,0 +1,22 @@
+---
+- name: configure the nomad clients
+  hosts: clients
+  become: true
+
+  tasks:
+  - name: configure nomad clients
+    copy:
+      dest: "/etc/nomad.d/client.hcl"
+      content: |
+        client {
+          enabled = true
+          servers = ["192.168.1.22"]
+        }
+
+  - name: enable nomad
+    shell:
+      cmd: systemctl enable nomad.service
+
+  - name: start nomad
+    shell:
+      cmd: systemctl start nomad.service

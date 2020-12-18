@@ -1,0 +1,157 @@
+---
+- name: install nomad
+  become: true
+  hosts: all
+  gather_facts: false
+  
+  tasks:
+#  - name: install unzip
+#    apt:
+#      name: unzip
+#      state: present
+#      update_cache: true
+#
+#  - name: install nomad
+#    get_url:
+#      url: https://releases.hashicorp.com/nomad/1.0.1/nomad_1.0.1_linux_arm.zip
+#      dest: /tmp
+#      mode: "+rx"
+#  
+#  - name: unarchive nomad
+#    unarchive:
+#      src: /tmp/nomad_1.0.1_linux_arm.zip
+#      dest: /usr/local/bin
+#      remote_src: yes
+  
+  - name: Creating common nomad file
+    copy:
+      dest: "/etc/nomad.d/nomad.hcl"
+      content: |
+        datacenter = "dc1"
+        data_dir = "/opt/nomad"
+        acl {
+          enabled = true
+        }  
+
+  #- name: add the service file
+  #  copy: 
+  #    dest: /etc/systemd/system/nomad.service
+  #    content: |
+  #      [Unit]
+  #      Description=Nomad
+  #      Documentation=https://nomadproject.io/docs/
+  #      Wants=network-online.target
+  #      After=network-online.target
+  #      
+  #      # When using Nomad with Consul it is not necessary to start Consul first. These
+  #      # lines start Consul before Nomad as an optimization to avoid Nomad logging
+  #      # that Consul is unavailable at startup.
+  #      #Wants=consul.service
+  #      #After=consul.service
+  #      
+  #      [Service]
+  #      ExecReload=/bin/kill -HUP $MAINPID
+  #      ExecStart=/usr/local/bin/nomad agent -config /etc/nomad.d
+  #      KillMode=process
+  #      KillSignal=SIGINT
+  #      LimitNOFILE=65536
+  #      LimitNPROC=infinity
+  #      Restart=on-failure
+  #      RestartSec=2
+  #      StartLimitBurst=3
+  #      StartLimitIntervalSec=10
+  #      TasksMax=infinity
+  #      OOMScoreAdjust=-1000
+  #      
+  #      [Install]
+  #      WantedBy=multi-user.target 
+  
+  #- name: install docker
+  #  apt:
+  #    name: docker.io
+  #    state: present
+  #    update_cache: true 
+  #
+  #- name: add ubuntu user to docker group
+  #  user:
+  #    name: ubuntu
+  #    groups: 
+  #      - docker 
+  #      - sudo
+#
+  #- name: turn swap off
+  #  shell: swapoff -a
+#
+  #- name: disable swap in fstab
+  #  replace: 
+  #    path: /etc/fstab
+  #    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+  #    replace: '# \1'
+#
+  #- name: Ensure required kernel modules are loaded
+  #  modprobe: name={{ item }} state=present
+  #  loop:
+  #    - br_netfilter
+  #    - ip6_udp_tunnel
+  #    - ip_set
+  #    - ip_set_hash_ip
+  #    - ip_set_hash_net
+  #    - iptable_filter
+  #    - iptable_nat
+  #    - iptable_mangle
+  #    - iptable_raw
+  #    - nf_conntrack_netlink
+  #    - nf_conntrack
+  #    - nf_defrag_ipv4
+  #    - nf_nat
+  #    - nfnetlink
+  #    - udp_tunnel
+  #    - veth
+  #    - vxlan
+  #    - x_tables
+  #    - xt_addrtype
+  #    - xt_conntrack
+  #    - xt_comment
+  #    - xt_mark
+  #    - xt_multiport
+  #    - xt_nat
+  #    - xt_recent
+  #    - xt_set
+  #    - xt_statistic
+  #    - xt_tcpudp
+  #
+  - name: Add required kernel modules to automatically loaded modules
+    blockinfile:
+      path: /etc/modules-load.d/modules.conf
+      backup: true
+      create: true
+      block: |
+        br_netfilter
+        ip6_udp_tunnel
+        ip_set
+        ip_set_hash_ip
+        ip_set_hash_net
+        iptable_filter
+        iptable_nat
+        iptable_mangle
+        iptable_raw
+        nf_conntrack_netlink
+        nf_conntrack
+        nf_defrag_ipv4
+        nf_nat
+        nf_nat_masquerade_ipv4
+        nfnetlink
+        udp_tunnel
+        veth
+        vxlan
+        x_tables
+        xt_addrtype
+        xt_conntrack
+        xt_comment
+        xt_mark
+        xt_multiport
+        xt_nat
+        xt_recent
+        xt_set
+        xt_statistic
+        xt_tcpudp

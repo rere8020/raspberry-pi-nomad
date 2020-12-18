@@ -1,0 +1,27 @@
+---
+- name: configure nomad servers
+  hosts: servers
+  become: true
+
+  tasks:
+  - name: Creating nomad server file
+    copy:
+      dest: "/etc/nomad.d/server.hcl"
+      content: |
+        server {
+          enabled = true
+          bootstrap_expect = 1
+        }
+        advertise {
+          http = "192.168.1.22:4646"
+          rpc  = "192.168.1.22:4647"
+          serf = "192.168.1.22:4648"
+        }
+  
+  - name: enable nomad
+    shell:
+      cmd: systemctl enable nomad.service
+
+  - name: start nomad
+    shell:
+      cmd: systemctl start nomad.service
